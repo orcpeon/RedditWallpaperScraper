@@ -1,3 +1,5 @@
+package Domains;
+
 public enum SuitableDomains {
 
     REDDIT("i.redd.it"),

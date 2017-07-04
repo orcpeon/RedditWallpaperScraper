@@ -1,6 +1,7 @@
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import utils.EnumIterator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,13 +56,13 @@ public class Emulator {
         return page.getByXPath(exp);
     }
 
-
-
     //test method
     public void printTitles() {
         List<String> printableList = new ArrayList<String>();
         List<HtmlElement> titleList = page.getByXPath(
                 "//*[@id='siteTable']//*[@class='entry unvoted']//*[@class='title']");
+        List<HtmlElement> domainList = page.getByXPath(
+                "//*[@id='siteTable']//*[@class='entry unvoted']//*[@class='title']/*[@class='domain']");
         if (!titleList.isEmpty()) {
             for (HtmlElement node : titleList) {
                 printableList.add(node.asText());
@@ -70,12 +71,21 @@ public class Emulator {
             printableList.add("None found");
         }
         System.out.println(printableList);
+        System.out.println("_____");
+        System.out.println(chooseFirstLegitLink(titleList).asText());
     }
 
-    private void chooseFirstLegitLink(List<HtmlElement> list) {
+    private HtmlElement chooseFirstLegitLink(List<HtmlElement> list) {
+        HtmlElement returnable = list.get(0); //TODO NICE WAY OF HANDLING NO SUITABLE DOMAINS
+
         for (HtmlElement node : list) {
-
+            if (EnumIterator.isDomainSuitable(node.getChildNodes().get(2).asText())) { //TODO MAKE INDEPENDENT ON THE LIST
+                returnable = node;
+            }
         }
+        return returnable;
     }
+
+
 
 }
