@@ -12,6 +12,8 @@ public class Emulator {
     String searchUrl;
     WebClient client;
     HtmlPage page;
+    String titlePath = "//*[@id='siteTable']//*[@class='entry unvoted']//*[@class='title']";
+    String domainPath = titlePath + "/*[@class='domain']";
 
 
     public Emulator(String searchUrl) {
@@ -59,10 +61,8 @@ public class Emulator {
     //test method
     public void printTitles() {
         List<String> printableList = new ArrayList<String>();
-        List<HtmlElement> titleList = page.getByXPath(
-                "//*[@id='siteTable']//*[@class='entry unvoted']//*[@class='title']");
-        List<HtmlElement> domainList = page.getByXPath(
-                "//*[@id='siteTable']//*[@class='entry unvoted']//*[@class='title']/*[@class='domain']");
+        List<HtmlElement> titleList = page.getByXPath(titlePath);
+        List<HtmlElement> domainList = page.getByXPath(domainPath);
         if (!titleList.isEmpty()) {
             for (HtmlElement node : titleList) {
                 printableList.add(node.asText());
@@ -72,15 +72,16 @@ public class Emulator {
         }
         System.out.println(printableList);
         System.out.println("_____");
-        System.out.println(chooseFirstLegitLink(titleList).asText());
+        System.out.println(chooseFirstLegitLink(domainList).asText());
     }
 
     private HtmlElement chooseFirstLegitLink(List<HtmlElement> list) {
         HtmlElement returnable = list.get(0); //TODO NICE WAY OF HANDLING NO SUITABLE DOMAINS
 
         for (HtmlElement node : list) {
-            if (EnumIterator.isDomainSuitable(node.getChildNodes().get(2).asText())) { //TODO MAKE INDEPENDENT ON THE LIST
+            if (EnumIterator.isDomainSuitable(node.asText())) { //TODO MAKE INDEPENDENT ON THE LIST
                 returnable = node;
+                return returnable;
             }
         }
         return returnable;
